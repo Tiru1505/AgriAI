@@ -1,0 +1,16 @@
+# React
+node_modules/
+dist/
+.env
+
+# Python
+Backend/venv/
+Backend/__pycache__/
+*.pyc
+
+# ML cache
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
