@@ -14,3 +14,7 @@ Backend/__pycache__/
 # OS
 .DS_Store
 Thumbs.db
+
+Backend/models/crop_recommendation_model.pkl
+Backend/models/fertilizer_model.pkl
+Backend/models/xgb_crop_model.pkl
