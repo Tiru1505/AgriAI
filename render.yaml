@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: agriai-backend
+    runtime: python
+    rootDir: Backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      # Comma-separated frontend origins allowed to call this API.
+      # Replace with your real Vercel URL after the first deploy.
+      - key: ALLOWED_ORIGINS
+        value: https://agriai-taupe.vercel.app,http://localhost:5173

@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 
+import { API_URL } from "../api";
+
 import {
   FaSeedling,
   FaCloudRain,
@@ -83,7 +85,7 @@ useEffect(()=>{
 
 axios
 .get(
-"http://127.0.0.1:8000/yield-options"
+`${API_URL}/yield-options`
 )
 
 .then((response)=>{
@@ -153,7 +155,7 @@ try{
 
 const response = await axios.post(
 
-"http://127.0.0.1:8000/crop/recommend",
+`${API_URL}/crop/recommend`,
 
 formData
 

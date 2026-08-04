@@ -140,9 +140,18 @@ X_test.shape
 
 # Model
 
+# Depth and leaf size are capped so the forest stays small enough to
+# load inside a 512MB free-tier dyno. With 55 crop classes an unbounded
+# forest stored a 55-float array per leaf and ballooned to 1.2GB, while
+# also overfitting -- these limits score better on both top-1 and top-5.
+
 model = RandomForestClassifier(
 
-    n_estimators=200,
+    n_estimators=120,
+
+    max_depth=16,
+
+    min_samples_leaf=5,
 
     random_state=42,
 
@@ -212,7 +221,9 @@ joblib.dump(
 
     model,
 
-    "models/crop_recommendation_model.pkl"
+    "models/crop_recommendation_model.pkl",
+
+    compress=3
 
 )
 

@@ -1,1 +1,4 @@
-*.pkl filter=lfs diff=lfs merge=lfs -text
+# Model files are stored as regular git blobs, not LFS.
+# Render (and most PaaS builders) do a plain clone and do not fetch LFS
+# objects, which would leave pointer files that joblib.load cannot read.
+# The largest model is now ~16MB, well under GitHub's limits.

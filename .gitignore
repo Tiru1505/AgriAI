@@ -15,6 +15,8 @@ Backend/__pycache__/
 .DS_Store
 Thumbs.db
 
-Backend/models/crop_recommendation_model.pkl
+# crop_recommendation_model.pkl is now committed (~16MB) -- the backend
+# cannot start without it. These two are still excluded: neither is used
+# by any API route, and both are far too large to deploy.
 Backend/models/fertilizer_model.pkl
 Backend/models/xgb_crop_model.pkl

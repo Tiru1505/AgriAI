@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+import { API_URL } from "../api";
+
 import { motion } from "framer-motion";
 
 import {
@@ -43,7 +45,7 @@ function Dashboard() {
   useEffect(() => {
 
     axios
-      .get("http://127.0.0.1:8000/dashboard")
+      .get(`${API_URL}/dashboard`)
       .then((response) => {
 
         setDashboardData(response.data);

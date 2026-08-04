@@ -1,3 +1,5 @@
+import os
+
 import joblib
 
 from fastapi import FastAPI
@@ -11,6 +13,18 @@ from dashboard_state import latest_dashboard
 
 app = FastAPI(
     title="AgriAI API"
+)
+
+
+# Model files live next to this file, not in the process working
+# directory -- resolve them absolutely so the app boots from anywhere.
+
+MODEL_DIR = os.path.join(
+
+    os.path.dirname(os.path.abspath(__file__)),
+
+    "models"
+
 )
 
 
@@ -29,12 +43,29 @@ app.include_router(
 
 
 # CORS
+#
+# Set ALLOWED_ORIGINS in the hosting environment to a comma-separated
+# list of frontend URLs. Defaults to the local Vite dev server.
+
+ALLOWED_ORIGINS = [
+
+    origin.strip()
+
+    for origin in os.environ.get(
+        "ALLOWED_ORIGINS",
+        "http://localhost:5173,http://127.0.0.1:5173"
+    ).split(",")
+
+    if origin.strip()
+
+]
+
 
 app.add_middleware(
 
     CORSMiddleware,
 
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
 
     allow_credentials=True,
 
@@ -108,17 +139,17 @@ def get_yield_options():
 
 
     crop_encoder = joblib.load(
-        "models/crop_encoder.pkl"
+        os.path.join(MODEL_DIR, "crop_encoder.pkl")
     )
 
 
     season_encoder = joblib.load(
-        "models/Season_encoder.pkl"
+        os.path.join(MODEL_DIR, "Season_encoder.pkl")
     )
 
 
     state_encoder = joblib.load(
-        "models/State_encoder.pkl"
+        os.path.join(MODEL_DIR, "State_encoder.pkl")
     )
 
 

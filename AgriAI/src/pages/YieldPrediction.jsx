@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
+import { API_URL } from "../api";
+
 import {
   FaSeedling,
   FaCloudRain,
@@ -116,7 +118,7 @@ function YieldPrediction() {
 
       const response = await fetch(
 
-        "http://127.0.0.1:8000/predict-yield",
+        `${API_URL}/predict-yield`,
 
         {
           method: "POST",
