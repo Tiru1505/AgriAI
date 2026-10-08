@@ -1,8 +1,8 @@
 function Analytics() {
   return (
-    <div style={{paddingTop:"120px"}}>
+    <div className="yield-container">
       <h1>📊 Analytics Page</h1>
-      <p>Coming soon...</p>
+      <p className="page-note">Coming soon...</p>
     </div>
   );
 }

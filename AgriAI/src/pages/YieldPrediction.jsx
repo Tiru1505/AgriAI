@@ -183,6 +183,8 @@ function YieldPrediction() {
               <FaSeedling /> Crop Information
             </h2>
 
+            <label className="field">
+            <span>Crop</span>
             <select
               name="crop"
               value={formData.crop}
@@ -208,9 +210,12 @@ function YieldPrediction() {
               }
 
             </select>
+            </label>
 
 
 
+            <label className="field">
+            <span>Crop Year</span>
             <input
 
               type="number"
@@ -222,11 +227,14 @@ function YieldPrediction() {
               onChange={handleChange}
 
               placeholder="Crop Year"
-
+              required
             />
+            </label>
 
 
 
+            <label className="field">
+            <span>Season</span>
             <select
 
               name="season"
@@ -257,9 +265,12 @@ function YieldPrediction() {
               }
 
             </select>
+            </label>
 
 
 
+            <label className="field">
+            <span>State</span>
             <select
 
               name="state"
@@ -290,20 +301,26 @@ function YieldPrediction() {
               }
 
             </select>
+            </label>
 
 
 
+            <label className="field">
+            <span>Area (hectare)</span>
             <input
 
               type="number"
 
               name="area"
+              value={formData.area}
 
               placeholder="Area (hectare)"
 
               onChange={handleChange}
-
+              required
+              step="any"
             />
+            </label>
 
           </div>
 
@@ -317,19 +334,31 @@ function YieldPrediction() {
               <FaFlask /> Farm Inputs
             </h2>
 
+            <label className="field">
+            <span>Fertilizer Quantity (kg)</span>
             <input
               type="number"
               name="fertilizer"
+              value={formData.fertilizer}
               placeholder="Fertilizer Quantity (kg)"
               onChange={handleChange}
+              required
+              step="any"
             />
+            </label>
 
+            <label className="field">
+            <span>Pesticide Quantity (kg)</span>
             <input
               type="number"
               name="pesticide"
+              value={formData.pesticide}
               placeholder="Pesticide Quantity (kg)"
               onChange={handleChange}
+              required
+              step="any"
             />
+            </label>
 
           </div>
 
@@ -343,12 +372,18 @@ function YieldPrediction() {
               <FaCloudRain /> Weather
             </h2>
 
+            <label className="field">
+            <span>Annual Rainfall (mm)</span>
             <input
               type="number"
               name="rainfall"
+              value={formData.rainfall}
               placeholder="Annual Rainfall (mm)"
               onChange={handleChange}
+              required
+              step="any"
             />
+            </label>
 
           </div>
 

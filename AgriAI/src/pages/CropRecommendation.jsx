@@ -128,7 +128,17 @@ response.data.recommended_crop
 
 setCropData(
 
-response.data.top_predictions.map(
+response.data.top_predictions
+
+// Crops with 0% confidence only clutter the chart
+
+.filter(
+
+(item)=>item.confidence>0
+
+)
+
+.map(
 
 (item)=>({
 
@@ -227,6 +237,8 @@ Soil Parameters
 
 
 
+<label className="field">
+<span>Nitrogen (N)</span>
 <input
 
 type="number"
@@ -240,12 +252,15 @@ onChange={handleChange}
 placeholder="Nitrogen (N)"
 
 required
-
+  step="any"
 />
+</label>
 
 
 
 
+<label className="field">
+<span>Phosphorus (P)</span>
 <input
 
 type="number"
@@ -259,12 +274,15 @@ onChange={handleChange}
 placeholder="Phosphorus (P)"
 
 required
-
+  step="any"
 />
+</label>
 
 
 
 
+<label className="field">
+<span>Potassium (K)</span>
 <input
 
 type="number"
@@ -278,12 +296,15 @@ onChange={handleChange}
 placeholder="Potassium (K)"
 
 required
-
+  step="any"
 />
+</label>
 
 
 
 
+<label className="field">
+<span>Soil pH</span>
 <input
 
 type="number"
@@ -301,6 +322,7 @@ step="any"
 required
 
 />
+</label>
 
 
 
@@ -332,6 +354,8 @@ Weather
 
 
 
+<label className="field">
+<span>Temperature (°C)</span>
 <input
 
 type="number"
@@ -349,10 +373,13 @@ step="any"
 required
 
 />
+</label>
 
 
 
 
+<label className="field">
+<span>Humidity (%)</span>
 <input
 
 type="number"
@@ -370,10 +397,13 @@ step="any"
 required
 
 />
+</label>
 
 
 
 
+<label className="field">
+<span>Rainfall (mm)</span>
 <input
 
 type="number"
@@ -391,6 +421,7 @@ step="any"
 required
 
 />
+</label>
 
 
 
