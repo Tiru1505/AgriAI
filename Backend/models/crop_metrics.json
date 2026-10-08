@@ -1,0 +1,6 @@
+{
+  "cv_accuracy": 0.9959,
+  "holdout_accuracy": 0.9955,
+  "holdout_top3_accuracy": 1.0,
+  "test_rows": 440
+}

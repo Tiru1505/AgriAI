@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from schemas import YieldPredictionRequest
 from utils.predictor import predict_yield, CROPS, SEASONS, STATES
-from routes import crop_routes
+from routes import crop_routes, analytics
 from dashboard_state import latest_dashboard
 
 
@@ -21,6 +21,17 @@ app.include_router(
     crop_routes.router,
 
     prefix="/crop"
+
+)
+
+
+# Analytics Router
+
+app.include_router(
+
+    analytics.router,
+
+    prefix="/analytics"
 
 )
 

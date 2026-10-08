@@ -37,6 +37,11 @@ function Navbar() {
 
       </div>
 
+
+      <NavLink to="/login" className="nav-login">
+        Login
+      </NavLink>
+
     </motion.nav>
   );
 }

@@ -1,4 +1,5 @@
 import os
+import json
 import numpy as np
 import pandas as pd
 import joblib
@@ -118,32 +119,38 @@ def evaluate(name, train_index, test_index):
 
     not_coconut = (df.loc[test_index, "Crop"] != "Coconut").values
 
-    print(f"\n{name} ({len(test_index)} test rows)")
+    metrics = {
 
-    print(
-        "R2 (log yield):",
-        round(r2_score(np.log1p(actual), np.log1p(predictions)), 4)
-    )
+        "test_rows": len(test_index),
 
-    print(
-        "R2 (raw yield):",
-        round(r2_score(actual, predictions), 4)
-    )
+        "r2_log": round(
+            r2_score(np.log1p(actual), np.log1p(predictions)), 4
+        ),
 
-    print(
-        "R2 (raw yield, without coconut):",
-        round(r2_score(actual[not_coconut], predictions[not_coconut]), 4)
-    )
+        "r2_raw": round(
+            r2_score(actual, predictions), 4
+        ),
 
-    print(
-        "MAE:",
-        round(mean_absolute_error(actual, predictions), 3)
-    )
+        "r2_raw_without_coconut": round(
+            r2_score(actual[not_coconut], predictions[not_coconut]), 4
+        ),
 
-    print(
-        "Median absolute error:",
-        round(float(np.median(np.abs(actual - predictions))), 3)
-    )
+        "mae": round(
+            mean_absolute_error(actual, predictions), 3
+        ),
+
+        "median_absolute_error": round(
+            float(np.median(np.abs(actual - predictions))), 3
+        )
+
+    }
+
+    print(f"\n{name}")
+
+    for key, value in metrics.items():
+        print(f"{key}: {value}")
+
+    return metrics
 
 
 # Evaluation 1: random 80/20 split
@@ -154,12 +161,12 @@ train_index, test_index = train_test_split(
     random_state=42
 )
 
-evaluate("Random split", train_index, test_index)
+random_metrics = evaluate("Random split", train_index, test_index)
 
 
 # Evaluation 2: train on the past, test on the most recent years
 
-evaluate(
+time_metrics = evaluate(
     f"Time split (test = {TEST_FROM_YEAR} onwards)",
     df.index[df["Crop_Year"] < TEST_FROM_YEAR],
     df.index[df["Crop_Year"] >= TEST_FROM_YEAR]
@@ -187,3 +194,21 @@ joblib.dump(
 
 print("Model saved:")
 print(model_path)
+
+
+# Metrics are read by the /analytics/overview endpoint
+
+with open(
+    os.path.join(MODEL_DIR, "yield_metrics.json"),
+    "w"
+) as file:
+
+    json.dump(
+        {
+            "random_split": random_metrics,
+            "time_split": time_metrics,
+            "time_split_test_from_year": TEST_FROM_YEAR
+        },
+        file,
+        indent=2
+    )

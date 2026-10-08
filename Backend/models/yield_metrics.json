@@ -1,0 +1,19 @@
+{
+  "random_split": {
+    "test_rows": 3938,
+    "r2_log": 0.9524,
+    "r2_raw": 0.9149,
+    "r2_raw_without_coconut": 0.8782,
+    "mae": 14.737,
+    "median_absolute_error": 0.183
+  },
+  "time_split": {
+    "test_rows": 3249,
+    "r2_log": 0.9424,
+    "r2_raw": 0.9446,
+    "r2_raw_without_coconut": 0.6061,
+    "mae": 14.219,
+    "median_absolute_error": 0.242
+  },
+  "time_split_test_from_year": 2017
+}

@@ -1,4 +1,5 @@
 import os
+import json
 import pandas as pd
 import joblib
 
@@ -106,23 +107,32 @@ model.fit(
 
 predictions = model.predict(X_test)
 
-print(
-    "\nHold-out accuracy:",
-    round(accuracy_score(y_test, predictions), 4)
-)
+metrics = {
 
-print(
-    "Hold-out top-3 accuracy:",
-    round(
-        top_k_accuracy_score(
-            y_test,
-            model.predict_proba(X_test),
-            k=3,
-            labels=model.classes_
+    "cv_accuracy": round(float(scores.mean()), 4),
+
+    "holdout_accuracy": round(
+        float(accuracy_score(y_test, predictions)), 4
+    ),
+
+    "holdout_top3_accuracy": round(
+        float(
+            top_k_accuracy_score(
+                y_test,
+                model.predict_proba(X_test),
+                k=3,
+                labels=model.classes_
+            )
         ),
         4
-    )
-)
+    ),
+
+    "test_rows": len(y_test)
+
+}
+
+print("\nHold-out accuracy:", metrics["holdout_accuracy"])
+print("Hold-out top-3 accuracy:", metrics["holdout_top3_accuracy"])
 
 print("\nClassification Report:")
 
@@ -151,3 +161,13 @@ joblib.dump(
 )
 
 print("Model saved successfully!")
+
+
+# Metrics are read by the /analytics/overview endpoint
+
+with open(
+    os.path.join(MODEL_DIR, "crop_metrics.json"),
+    "w"
+) as file:
+
+    json.dump(metrics, file, indent=2)

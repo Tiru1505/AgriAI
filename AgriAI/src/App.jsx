@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import YieldPrediction from "./pages/YieldPrediction";
 import CropRecommendation from "./pages/CropRecommendation";
 import Analytics from "./pages/Analytics";
+import Login from "./pages/Login";
 
 
 function App() {
@@ -34,6 +35,11 @@ function App() {
         <Route 
           path="/analytics" 
           element={<Analytics />} 
+        />
+
+        <Route 
+          path="/login" 
+          element={<Login />} 
         />
 
       </Routes>

@@ -66,6 +66,21 @@ Provides a centralized dashboard displaying:
 
 ---
 
+### 📈 Analytics
+
+* Dataset summary: records, crops, states and years covered
+* Crop explorer: yield trend by year, top states, rainfall against yield
+* Model accuracy and feature importance for both models
+
+---
+
+### 🔐 Login
+
+* Login page with a "Continue with Google" button
+* Google authentication is not connected yet, and the app has no database: predictions are not saved
+
+---
+
 ## Tech Stack
 
 ### Frontend
@@ -262,6 +277,22 @@ Returns:
 * Recommended Crop
 * Soil Health
 * Weather Risk
+
+---
+
+### Analytics
+
+```http
+GET /analytics/overview
+```
+
+Returns dataset size, model accuracy metrics and feature importance for both models.
+
+```http
+GET /analytics/crop?crop=Rice
+```
+
+Returns, for one crop: average yield by year, top states by yield, and rainfall against yield.
 
 ---
 
