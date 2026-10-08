@@ -13,52 +13,49 @@ MODEL_DIR = os.path.join(
 )
 
 
+# Full pipeline from train_xgb.py: encoding, XGBoost and the
+# log-yield transform are all inside this one object.
+
 model = joblib.load(
-    os.path.join(MODEL_DIR, "xgb_model.pkl")
-)
-
-scaler = joblib.load(
-    os.path.join(MODEL_DIR, "scaler.pkl")
+    os.path.join(MODEL_DIR, "yield_model.pkl")
 )
 
 
-crop_encoder = joblib.load(
-    os.path.join(MODEL_DIR, "crop_encoder.pkl")
+_encoder = (
+    model.regressor_
+    .named_steps["encoder"]
+    .named_transformers_["categorical"]
 )
 
-season_encoder = joblib.load(
-    os.path.join(MODEL_DIR, "Season_encoder.pkl")
-)
-
-state_encoder = joblib.load(
-    os.path.join(MODEL_DIR, "State_encoder.pkl")
-)
+CROPS, SEASONS, STATES = [
+    categories.tolist()
+    for categories in _encoder.categories_
+]
 
 
 def predict_yield(data):
 
-    crop = crop_encoder.transform(
-        [data["crop"]]
-    )[0]
+    for field, known in [
+        ("crop", CROPS),
+        ("season", SEASONS),
+        ("state", STATES)
+    ]:
 
-    season = season_encoder.transform(
-        [data["season"]]
-    )[0]
-
-    state = state_encoder.transform(
-        [data["state"]]
-    )[0]
+        if data[field] not in known:
+            raise ValueError(
+                f"Unknown {field}: {data[field]}"
+            )
 
 
     features = pd.DataFrame([{
 
-        "Crop": crop,
+        "Crop": data["crop"],
+
+        "Season": data["season"],
+
+        "State": data["state"],
 
         "Crop_Year": data["crop_year"],
-
-        "Season": season,
-
-        "State": state,
 
         "Area": data["area"],
 
@@ -66,26 +63,9 @@ def predict_yield(data):
 
         "Fertilizer": data["fertilizer"],
 
-        "Pesticide": data["pesticide"],
-
-        "Avg_Temperature": data["avg_temperature"],
-
-        "Max_Temperature": data["max_temperature"],
-
-        "Min_Temperature": data["min_temperature"],
-
-        "Nitrogen_N": data["nitrogen"],
-
-        "Phosphorus_P": data["phosphorus"],
-
-        "Potassium_K": data["potassium"]
+        "Pesticide": data["pesticide"]
 
     }])
-
-
-    features = scaler.transform(
-        features
-    )
 
 
     prediction = model.predict(
@@ -93,4 +73,4 @@ def predict_yield(data):
     )
 
 
-    return prediction[0]
+    return max(float(prediction[0]), 0.0)

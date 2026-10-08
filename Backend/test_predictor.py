@@ -16,19 +16,7 @@ sample_data = {
 
     "fertilizer": 500,
 
-    "pesticide": 50,
-
-    "avg_temperature": 28,
-
-    "max_temperature": 34,
-
-    "min_temperature": 22,
-
-    "nitrogen": 90,
-
-    "phosphorus": 40,
-
-    "potassium": 40
+    "pesticide": 50
 }
 
 

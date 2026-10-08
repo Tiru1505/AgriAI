@@ -1,12 +1,10 @@
 import os
 
-import joblib
-
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from schemas import YieldPredictionRequest
-from utils.predictor import predict_yield
+from utils.predictor import predict_yield, CROPS, SEASONS, STATES
 from routes import crop_routes
 from dashboard_state import latest_dashboard
 
@@ -14,20 +12,6 @@ from dashboard_state import latest_dashboard
 app = FastAPI(
     title="AgriAI API"
 )
-
-
-# Model files live next to this file, not in the process working
-# directory -- resolve them absolutely so the app boots from anywhere.
-
-MODEL_DIR = os.path.join(
-
-    os.path.dirname(os.path.abspath(__file__)),
-
-    "models"
-
-)
-
-
 
 
 # Crop Recommendation Router
@@ -96,9 +80,18 @@ def home():
 def predict(request: YieldPredictionRequest):
 
 
-    prediction = predict_yield(
-        request.dict()
-    )
+    try:
+
+        prediction = predict_yield(
+            request.dict()
+        )
+
+    except ValueError as error:
+
+        raise HTTPException(
+            status_code=422,
+            detail=str(error)
+        )
 
 
     # Update dashboard data
@@ -138,34 +131,13 @@ def predict(request: YieldPredictionRequest):
 def get_yield_options():
 
 
-    crop_encoder = joblib.load(
-        os.path.join(MODEL_DIR, "crop_encoder.pkl")
-    )
-
-
-    season_encoder = joblib.load(
-        os.path.join(MODEL_DIR, "Season_encoder.pkl")
-    )
-
-
-    state_encoder = joblib.load(
-        os.path.join(MODEL_DIR, "State_encoder.pkl")
-    )
-
-
-
     return {
 
-        "crops":
-            crop_encoder.classes_.tolist(),
+        "crops": CROPS,
 
+        "seasons": SEASONS,
 
-        "seasons":
-            season_encoder.classes_.tolist(),
-
-
-        "states":
-            state_encoder.classes_.tolist()
+        "states": STATES
 
     }
 

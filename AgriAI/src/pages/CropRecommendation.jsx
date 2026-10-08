@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 
 import { API_URL } from "../api";
 
 import {
-  FaSeedling,
   FaCloudRain,
   FaFlask
 } from "react-icons/fa";
@@ -25,33 +24,19 @@ function CropRecommendation(){
 
 const [formData,setFormData] = useState({
 
-state:"",
-season:"",
+nitrogen:90,
 
-area:100,
+phosphorus:42,
 
-rainfall:1000,
+potassium:43,
 
-avg_temperature:25,
+ph:6.5,
 
-max_temperature:35,
+temperature:21,
 
-min_temperature:20,
+humidity:82,
 
-nitrogen:50,
-
-phosphorus:30,
-
-potassium:40
-
-});
-
-
-
-const [options,setOptions] = useState({
-
-states:[],
-seasons:[]
+rainfall:200
 
 });
 
@@ -74,43 +59,6 @@ const COLORS=[
 "#ef4444",
 "#a855f7"
 ];
-
-
-
-
-// Load dropdown options
-
-useEffect(()=>{
-
-
-axios
-.get(
-`${API_URL}/yield-options`
-)
-
-.then((response)=>{
-
-
-setOptions({
-
-states:response.data.states,
-
-seasons:response.data.seasons
-
-});
-
-
-})
-
-.catch((error)=>{
-
-console.log(error);
-
-});
-
-
-},[]);
-
 
 
 
@@ -261,149 +209,6 @@ y:0
 
 
 
-{/* LOCATION */}
-
-
-<div className="prediction-card">
-
-
-<h2>
-
-<FaSeedling/>
-
-Location
-
-</h2>
-
-
-
-<select
-
-name="state"
-
-value={formData.state}
-
-onChange={handleChange}
-
-required
-
->
-
-
-<option value="">
-
-Select State
-
-</option>
-
-
-{
-
-options.states.map(
-
-(state,index)=>(
-
-<option
-
-key={index}
-
-value={state}
-
->
-
-{state}
-
-</option>
-
-)
-
-)
-
-}
-
-
-</select>
-
-
-
-
-
-<select
-
-name="season"
-
-value={formData.season}
-
-onChange={handleChange}
-
-required
-
->
-
-
-<option value="">
-
-Select Season
-
-</option>
-
-
-
-{
-
-options.seasons.map(
-
-(season,index)=>(
-
-<option
-
-key={index}
-
-value={season}
-
->
-
-{season}
-
-</option>
-
-)
-
-)
-
-}
-
-
-</select>
-
-
-
-
-
-<input
-
-type="number"
-
-name="area"
-
-value={formData.area}
-
-onChange={handleChange}
-
-placeholder="Area"
-
-/>
-
-
-
-</div>
-
-
-
-
-
-
-
 {/* SOIL */}
 
 
@@ -432,10 +237,11 @@ value={formData.nitrogen}
 
 onChange={handleChange}
 
-placeholder="Nitrogen"
+placeholder="Nitrogen (N)"
+
+required
 
 />
-
 
 
 
@@ -450,10 +256,11 @@ value={formData.phosphorus}
 
 onChange={handleChange}
 
-placeholder="Phosphorus"
+placeholder="Phosphorus (P)"
+
+required
 
 />
-
 
 
 
@@ -468,7 +275,30 @@ value={formData.potassium}
 
 onChange={handleChange}
 
-placeholder="Potassium"
+placeholder="Potassium (K)"
+
+required
+
+/>
+
+
+
+
+<input
+
+type="number"
+
+name="ph"
+
+value={formData.ph}
+
+onChange={handleChange}
+
+placeholder="Soil pH"
+
+step="any"
+
+required
 
 />
 
@@ -506,67 +336,59 @@ Weather
 
 type="number"
 
+name="temperature"
+
+value={formData.temperature}
+
+onChange={handleChange}
+
+placeholder="Temperature (°C)"
+
+step="any"
+
+required
+
+/>
+
+
+
+
+<input
+
+type="number"
+
+name="humidity"
+
+value={formData.humidity}
+
+onChange={handleChange}
+
+placeholder="Humidity (%)"
+
+step="any"
+
+required
+
+/>
+
+
+
+
+<input
+
+type="number"
+
 name="rainfall"
 
 value={formData.rainfall}
 
 onChange={handleChange}
 
-placeholder="Rainfall"
+placeholder="Rainfall (mm)"
 
-/>
+step="any"
 
-
-
-
-
-<input
-
-type="number"
-
-name="avg_temperature"
-
-value={formData.avg_temperature}
-
-onChange={handleChange}
-
-placeholder="Average Temperature"
-
-/>
-
-
-
-
-
-<input
-
-type="number"
-
-name="max_temperature"
-
-value={formData.max_temperature}
-
-onChange={handleChange}
-
-placeholder="Maximum Temperature"
-
-/>
-
-
-
-
-
-<input
-
-type="number"
-
-name="min_temperature"
-
-value={formData.min_temperature}
-
-onChange={handleChange}
-
-placeholder="Minimum Temperature"
+required
 
 />
 
@@ -699,7 +521,7 @@ scale:1
 
 Based on soil nutrients,
 
-weather and location analysis.
+pH and weather analysis.
 
 </p>
 

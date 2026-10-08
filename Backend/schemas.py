@@ -11,13 +11,5 @@ class YieldPredictionRequest(BaseModel):
     area: float = Field(gt=0)
     rainfall: float = Field(gt=0)
 
-    fertilizer: float
-    pesticide: float
-
-    avg_temperature: float
-    max_temperature: float
-    min_temperature: float
-
-    nitrogen: float
-    phosphorus: float
-    potassium: float
+    fertilizer: float = Field(ge=0)
+    pesticide: float = Field(ge=0)

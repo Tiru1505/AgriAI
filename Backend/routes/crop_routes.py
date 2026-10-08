@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from utils.crop_predictor import recommend_crops
 from dashboard_state import latest_dashboard
@@ -11,19 +11,15 @@ router = APIRouter()
 
 class CropRequest(BaseModel):
 
-    state: str
-    season: str
+    nitrogen: float = Field(ge=0)
+    phosphorus: float = Field(ge=0)
+    potassium: float = Field(ge=0)
 
-    area: float
-    rainfall: float
+    temperature: float
+    humidity: float = Field(ge=0, le=100)
+    ph: float = Field(ge=0, le=14)
 
-    avg_temperature: float
-    max_temperature: float
-    min_temperature: float
-
-    nitrogen: float
-    phosphorus: float
-    potassium: float
+    rainfall: float = Field(ge=0)
 
 
 

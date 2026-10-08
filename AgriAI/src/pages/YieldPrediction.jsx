@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 import { API_URL } from "../api";
@@ -31,15 +31,7 @@ function YieldPrediction() {
     area: "",
     rainfall: "",
     fertilizer: "",
-    pesticide: "",
-
-    avg_temperature: "",
-    max_temperature: "",
-    min_temperature: "",
-
-    nitrogen: "",
-    phosphorus: "",
-    potassium: ""
+    pesticide: ""
 
   });
 
@@ -49,34 +41,29 @@ function YieldPrediction() {
 
 
 
-  const crops = [
-    "Rice",
-    "Wheat",
-    "Maize",
-    "Cotton",
-    "Sugarcane",
-    "Groundnut",
-    "Pulses"
-  ];
+  const [options, setOptions] = useState({
 
-  const seasons = [
-    "Kharif",
-    "Rabi",
-    "Summer",
-    "Winter",
-    "Autumn",
-    "Whole Year"
-  ];
+    crops: [],
+    seasons: [],
+    states: []
 
-  const states = [
-    "Andhra Pradesh",
-    "Telangana",
-    "Tamil Nadu",
-    "Karnataka",
-    "Maharashtra",
-    "Punjab",
-    "Gujarat"
-  ];
+  });
+
+
+
+  // Load dropdown options
+
+  useEffect(() => {
+
+    fetch(`${API_URL}/yield-options`)
+
+      .then((response) => response.json())
+
+      .then((data) => setOptions(data))
+
+      .catch((err) => console.log(err));
+
+  }, []);
 
 
 
@@ -208,7 +195,7 @@ function YieldPrediction() {
               </option>
 
               {
-                crops.map((crop) => (
+                options.crops.map((crop) => (
 
                   <option
                     key={crop}
@@ -257,7 +244,7 @@ function YieldPrediction() {
               </option>
 
               {
-                seasons.map((season) => (
+                options.seasons.map((season) => (
 
                   <option
                     key={season}
@@ -290,7 +277,7 @@ function YieldPrediction() {
               </option>
 
               {
-                states.map((state) => (
+                options.states.map((state) => (
 
                   <option
                     key={state}
@@ -322,46 +309,25 @@ function YieldPrediction() {
 
 
 
-          {/* Soil Parameters */}
+          {/* Farm Inputs */}
 
           <div className="prediction-card">
 
             <h2>
-              <FaFlask /> Soil Parameters
+              <FaFlask /> Farm Inputs
             </h2>
 
             <input
               type="number"
-              name="nitrogen"
-              placeholder="Nitrogen (N)"
-              onChange={handleChange}
-            />
-
-            <input
-              type="number"
-              name="phosphorus"
-              placeholder="Phosphorus (P)"
-              onChange={handleChange}
-            />
-
-            <input
-              type="number"
-              name="potassium"
-              placeholder="Potassium (K)"
-              onChange={handleChange}
-            />
-
-            <input
-              type="number"
               name="fertilizer"
-              placeholder="Fertilizer Quantity"
+              placeholder="Fertilizer Quantity (kg)"
               onChange={handleChange}
             />
 
             <input
               type="number"
               name="pesticide"
-              placeholder="Pesticide Quantity"
+              placeholder="Pesticide Quantity (kg)"
               onChange={handleChange}
             />
 
@@ -380,28 +346,7 @@ function YieldPrediction() {
             <input
               type="number"
               name="rainfall"
-              placeholder="Annual Rainfall"
-              onChange={handleChange}
-            />
-
-            <input
-              type="number"
-              name="avg_temperature"
-              placeholder="Average Temperature"
-              onChange={handleChange}
-            />
-
-            <input
-              type="number"
-              name="max_temperature"
-              placeholder="Maximum Temperature"
-              onChange={handleChange}
-            />
-
-            <input
-              type="number"
-              name="min_temperature"
-              placeholder="Minimum Temperature"
+              placeholder="Annual Rainfall (mm)"
               onChange={handleChange}
             />
 

@@ -1,234 +1,153 @@
+import os
 import pandas as pd
 import joblib
 
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import (
+    train_test_split,
+    cross_val_score,
+    StratifiedKFold
+)
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, classification_report
-from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import (
+    accuracy_score,
+    top_k_accuracy_score,
+    classification_report
+)
 
+
+# Paths
+BASE_DIR = os.path.dirname(
+    os.path.abspath(__file__)
+)
+
+DATA_PATH = os.path.join(
+    BASE_DIR,
+    "Data",
+    "Crop_recommendation.csv"
+)
+
+MODEL_DIR = os.path.join(
+    BASE_DIR,
+    "models"
+)
+
+
+FEATURES = [
+    "N",
+    "P",
+    "K",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall"
+]
+
+TARGET = "label"
 
 
 # Load dataset
 
-df = pd.read_csv(
-    "Data/crop_data.csv"
-)
+df = pd.read_csv(DATA_PATH)
 
-# Clean column names
 df.columns = df.columns.str.strip()
 
-
-# Remove extra spaces from text columns
-
-df = df.apply(
-    lambda x: x.str.strip() if x.dtype == "object" else x
-)
+print("Dataset shape:", df.shape)
+print("Crops:", df[TARGET].nunique())
 
 
+X = df[FEATURES]
 
-# Remove unnecessary columns
-
-df = df.drop(
-[
-    "Production",
-    "Yield",
-    "Fertilizer",
-    "Pesticide",
-    "Crop_Year"
-],
-axis=1
-)
+y = df[TARGET]
 
 
+def build_model():
 
-# Separate input and target
-
-X = df.drop(
-    "Crop",
-    axis=1
-)
-
-y = df["Crop"]
-
-
-
-# Load encoders
-
-label_encoders = joblib.load(
-    "models/label_encoders.pkl"
-)
-
-
-crop_encoder = joblib.load(
-    "models/crop_encoder.pkl"
-)
-
-
-
-# Encode categorical columns
-
-for column in ["Season","State"]:
-
-    X[column] = label_encoders[column].transform(
-        X[column]
+    # Trees do not need scaled inputs, so there is no scaler to keep in sync
+    return RandomForestClassifier(
+        n_estimators=200,
+        random_state=42,
+        n_jobs=-1
     )
 
 
+# Evaluation 1: 5-fold cross validation
 
-# Save feature names for checking
-
-print("Crop Features:")
-print(X.columns.tolist())
-
-
-
-# Create crop scaler
-
-crop_scaler = StandardScaler()
-
-
-X = crop_scaler.fit_transform(
-    X
-)
-
-
-
-joblib.dump(
-    crop_scaler,
-    "models/crop_scaler.pkl"
-)
-
-
-
-# Encode target
-
-y = crop_encoder.transform(
-    y
-)
-
-
-
-# Split dataset
-
-X_train, X_test, y_train, y_test = train_test_split(
-
+scores = cross_val_score(
+    build_model(),
     X,
     y,
+    cv=StratifiedKFold(
+        n_splits=5,
+        shuffle=True,
+        random_state=42
+    )
+)
 
+print("\n5-fold accuracy:", scores.round(4))
+print("Mean:", round(scores.mean(), 4))
+
+
+# Evaluation 2: held-out 20%
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
     test_size=0.2,
-
     random_state=42,
-
     stratify=y
-
 )
 
-
-
-print(
-"Training data:",
-X_train.shape
-)
-
-
-print(
-"Testing data:",
-X_test.shape
-)
-
-
-
-# Model
-
-# Depth and leaf size are capped so the forest stays small enough to
-# load inside a 512MB free-tier dyno. With 55 crop classes an unbounded
-# forest stored a 55-float array per leaf and ballooned to 1.2GB, while
-# also overfitting -- these limits score better on both top-1 and top-5.
-
-model = RandomForestClassifier(
-
-    n_estimators=120,
-
-    max_depth=16,
-
-    min_samples_leaf=5,
-
-    random_state=42,
-
-    n_jobs=-1
-
-)
-
-
-
-print(
-"Training started..."
-)
-
-
+model = build_model()
 
 model.fit(
     X_train,
     y_train
 )
 
-
-
-print(
-"Training completed!"
-)
-
-
-
-# Evaluation
-
-predictions = model.predict(
-    X_test
-)
-
-
-
-accuracy = accuracy_score(
-    y_test,
-    predictions
-)
-
+predictions = model.predict(X_test)
 
 print(
-"\nAccuracy:",
-accuracy
+    "\nHold-out accuracy:",
+    round(accuracy_score(y_test, predictions), 4)
 )
-
-
 
 print(
-"\nClassification Report:"
+    "Hold-out top-3 accuracy:",
+    round(
+        top_k_accuracy_score(
+            y_test,
+            model.predict_proba(X_test),
+            k=3,
+            labels=model.classes_
+        ),
+        4
+    )
 )
 
+print("\nClassification Report:")
 
 print(
-classification_report(
-    y_test,
-    predictions
+    classification_report(
+        y_test,
+        predictions
+    )
 )
-)
 
 
+# Final model is trained on every row
 
-# Save model
+model = build_model()
+
+model.fit(X, y)
+
 
 joblib.dump(
-
     model,
-
-    "models/crop_recommendation_model.pkl",
-
+    os.path.join(
+        MODEL_DIR,
+        "crop_recommendation_model.pkl"
+    ),
     compress=3
-
 )
 
-
-
-print(
-"\nModel saved successfully!"
-)
+print("Model saved successfully!")

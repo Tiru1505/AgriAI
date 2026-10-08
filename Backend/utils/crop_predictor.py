@@ -25,74 +25,27 @@ model = joblib.load(
 )
 
 
-scaler = joblib.load(
-    os.path.join(
-        MODEL_DIR,
-        "crop_scaler.pkl"
-    )
-)
-
-
-label_encoders = joblib.load(
-    os.path.join(
-        MODEL_DIR,
-        "label_encoders.pkl"
-    )
-)
-
-
-
-crop_encoder = joblib.load(
-    os.path.join(
-        MODEL_DIR,
-        "crop_encoder.pkl"
-    )
-)
-
-
 
 def recommend_crops(data):
 
 
-    season = label_encoders["Season"].transform(
-        [data["season"]]
-    )[0]
-
-
-    state = label_encoders["State"].transform(
-        [data["state"]]
-    )[0]
-
-
-
     features=pd.DataFrame([{
 
-        "Season":season,
+        "N":data["nitrogen"],
 
-        "State":state,
+        "P":data["phosphorus"],
 
-        "Area":data["area"],
+        "K":data["potassium"],
 
-        "Annual_Rainfall":data["rainfall"],
+        "temperature":data["temperature"],
 
-        "Avg_Temperature":data["avg_temperature"],
+        "humidity":data["humidity"],
 
-        "Max_Temperature":data["max_temperature"],
+        "ph":data["ph"],
 
-        "Min_Temperature":data["min_temperature"],
-
-        "Nitrogen_N":data["nitrogen"],
-
-        "Phosphorus_P":data["phosphorus"],
-
-        "Potassium_K":data["potassium"]
+        "rainfall":data["rainfall"]
 
     }])
-
-
-    features=scaler.transform(
-        features
-    )
 
 
 # Get probability for all crops
@@ -113,9 +66,7 @@ def recommend_crops(data):
         top_predictions.append({
 
             "crop":
-            crop_encoder.inverse_transform(
-                [index]
-            )[0],
+            model.classes_[index].title(),
 
             "confidence":
             round(

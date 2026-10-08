@@ -14,16 +14,13 @@ The system combines a modern React frontend with a FastAPI backend and trained M
 
 Recommends the most suitable crops based on:
 
-* State
-* Season
-* Land Area
-* Rainfall
-* Average Temperature
-* Maximum Temperature
-* Minimum Temperature
 * Nitrogen (N)
 * Phosphorus (P)
 * Potassium (K)
+* Soil pH
+* Temperature
+* Humidity
+* Rainfall
 
 Features:
 
@@ -41,12 +38,11 @@ Predicts expected crop yield using:
 * Crop Type
 * State
 * Season
+* Crop Year
 * Area
 * Annual Rainfall
 * Fertilizer Usage
 * Pesticide Usage
-* Temperature Data
-* NPK Soil Values
 
 Features:
 
@@ -114,29 +110,29 @@ Machine Learning Models
 
 ---
 
-## Dataset Features
+## Datasets
 
 ### Yield Prediction Dataset
 
-* Crop
-* Crop Year
-* Season
-* State
-* Area
-* Annual Rainfall
-* Fertilizer
-* Pesticide
-* Average Temperature
-* Maximum Temperature
-* Minimum Temperature
-* Nitrogen (N)
-* Phosphorus (P)
-* Potassium (K)
+Source: [Crop Yield in Indian States](https://www.kaggle.com/datasets/akshatgupta7/crop-yield-in-indian-states-dataset) (Kaggle)
 
-Dataset Size:
+File: `Backend/Data/crop_yield.csv`
 
 * 19,689 Records
-* 15 Features
+* 55 Crops, 30 States, 1997 to 2020
+* Columns: Crop, Crop Year, Season, State, Area, Production, Annual Rainfall, Fertilizer, Pesticide, Yield
+
+`Production` is dropped before training because yield is production divided by area.
+
+### Crop Recommendation Dataset
+
+Source: [Crop Recommendation Dataset](https://www.kaggle.com/datasets/atharvaingle/crop-recommendation-dataset) (Kaggle)
+
+File: `Backend/Data/Crop_recommendation.csv`
+
+* 2,200 Records
+* 22 Crops, 100 records each
+* Columns: N, P, K, temperature, humidity, ph, rainfall, label
 
 ---
 
@@ -144,33 +140,39 @@ Dataset Size:
 
 ### 🌾 Yield Prediction Model
 
-Model: XGBoost Regressor
+Model: XGBoost Regressor trained on log(1 + yield)
 
-Performance:
+Training script: `Backend/train_xgb.py`
 
-* MAE: 0.0166
-* R² Score: 0.9213
+| Test | R² (log yield) | R² (raw yield) | R² (raw, without coconut) | Median absolute error |
+| --- | --- | --- | --- | --- |
+| Random 80/20 split | 0.952 | 0.915 | 0.878 | 0.18 |
+| Train 1997–2016, test 2017–2020 | 0.942 | 0.945 | 0.606 | 0.24 |
 
 Interpretation:
 
-* The model explains approximately **92.13% of the variance** in crop yield.
-* Strong predictive performance for agricultural yield forecasting.
+* Yield ranges from 0 to 21,105 because coconut is counted in nuts, so the model learns log-yield. This keeps a few coconut rows from dominating training.
+* R² on log-yield is the fairest single number: about **95% of the variance** explained across all crops.
+* The time split is the realistic test, since it predicts years the model has never seen.
 
 ---
 
 ### 🌱 Crop Recommendation Model
 
-Model: XGBoost Classifier
+Model: Random Forest Classifier (200 trees)
+
+Training script: `Backend/train_model.py`
 
 Performance:
 
-* Top-1 Accuracy: 39.76%
-* Top-5 Accuracy: 79.56%
+* 5-Fold Cross-Validation Accuracy: 99.59%
+* Hold-out Accuracy: 99.55%
+* Hold-out Top-3 Accuracy: 100%
 
 Interpretation:
 
-* Exact crop prediction is challenging because of 55 crop classes.
-* The correct crop appears within the top 5 recommendations nearly **80% of the time**, making it practical for decision support.
+* The 22 crops in this dataset are well separated by soil and weather conditions, so high accuracy is expected.
+* The dataset is partly constructed rather than field-measured, so real-world accuracy will be lower.
 
 ---
 
@@ -178,45 +180,23 @@ Interpretation:
 
 Model: Random Forest Regressor
 
-Performance:
-
-* MAE: 3,324,874
-* R² Score: 0.9737
-
-Interpretation:
-
-* The model captures approximately **97.37% of fertilizer variance**.
-* Currently trained and tested but not integrated into the frontend.
+* Trained and tested (`Backend/train_fertilizer.py`) but not integrated into the application.
 
 ---
 
 ## Model Files
 
-### Included in Repository
-
 ```text
-crop_encoder.pkl
-crop_scaler.pkl
-fertilizer_encoders.pkl
-fertilizer_scaler.pkl
-label_encoders.pkl
-scaler.pkl
-Season_encoder.pkl
-State_encoder.pkl
-xgb_model.pkl
+yield_model.pkl                 Yield pipeline: encoder + XGBoost + log transform
+crop_recommendation_model.pkl   Random Forest crop classifier
 ```
 
-### Excluded from Repository
+Both can be regenerated from the `Backend` folder:
 
-Due to GitHub file-size limitations, the following trained models are excluded:
-
-```text
-crop_recommendation_model.pkl
-fertilizer_model.pkl
-xgb_crop_model.pkl
+```bash
+python train_xgb.py
+python train_model.py
 ```
-
-These models can be regenerated using the training scripts or stored externally.
 
 ---
 
