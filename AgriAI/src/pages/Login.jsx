@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { signInWithPopup, signOut } from "firebase/auth";
+import { signInWithPopup } from "firebase/auth";
 
 import { FcGoogle } from "react-icons/fc";
+import { FaChartLine, FaSeedling, FaHistory } from "react-icons/fa";
+
+import FarmerScene from "../components/FarmerScene";
 
 import { auth, googleProvider, firebaseReady } from "../firebase";
 import { useAuth } from "../auth/AuthContext";
@@ -13,7 +16,7 @@ function Login() {
 
   const navigate = useNavigate();
 
-  const { user } = useAuth();
+  const { user, continueAsGuest } = useAuth();
 
   const [notice, setNotice] = useState(
     firebaseReady
@@ -22,6 +25,13 @@ function Login() {
   );
 
   const [loading, setLoading] = useState(false);
+
+
+  // Already signed in: the dashboard is the home page
+
+  if (user) {
+    return <Navigate to="/" replace />;
+  }
 
 
   const handleGoogleLogin = async () => {
@@ -33,7 +43,7 @@ function Login() {
 
       await signInWithPopup(auth, googleProvider);
 
-      navigate("/history");
+      navigate("/", { replace: true });
 
     }
 
@@ -62,104 +72,128 @@ function Login() {
   };
 
 
+  const handleGuest = () => {
+
+    continueAsGuest();
+
+    navigate("/", { replace: true });
+
+  };
+
+
   return (
 
-    <div className="login-container">
+    <div className="login-page">
 
-      <motion.div
+      {/* Illustration side */}
 
-        className="login-card"
+      <div className="login-scene">
 
-        initial={{
-          opacity: 0,
-          y: 30
-        }}
+        <motion.h2
 
-        animate={{
-          opacity: 1,
-          y: 0
-        }}
+          initial={{
+            opacity: 0,
+            y: -20
+          }}
 
-      >
+          animate={{
+            opacity: 1,
+            y: 0
+          }}
 
-        <div className="login-logo">
-          🌾
-        </div>
+        >
+          🌾 AgriSense Pro
+        </motion.h2>
+
+        <p>
+          Smarter farming decisions, powered by AI.
+        </p>
+
+        <FarmerScene />
+
+      </div>
 
 
-        {
-          user
+      {/* Sign-in side */}
 
-          ?
+      <div className="login-panel">
 
-          <>
+        <motion.div
 
-            <h1>
-              You're signed in
-            </h1>
+          className="login-card"
 
-            <p className="login-subtitle">
-              {user.displayName || user.email}
+          initial={{
+            opacity: 0,
+            y: 30
+          }}
+
+          animate={{
+            opacity: 1,
+            y: 0
+          }}
+
+        >
+
+          <h1>
+            Welcome, Farmer!
+          </h1>
+
+          <p className="login-subtitle">
+            Sign in to open your dashboard.
+          </p>
+
+
+          <ul className="login-features">
+
+            <li>
+              <FaChartLine /> Predict crop yield
+            </li>
+
+            <li>
+              <FaSeedling /> Get crop recommendations
+            </li>
+
+            <li>
+              <FaHistory /> Keep your prediction history
+            </li>
+
+          </ul>
+
+
+          <button
+            type="button"
+            className="google-btn"
+            onClick={handleGoogleLogin}
+            disabled={!firebaseReady || loading}
+          >
+
+            <FcGoogle />
+
+            {loading ? "Signing in..." : "Continue with Google"}
+
+          </button>
+
+
+          {
+            notice &&
+
+            <p className="login-notice" role="status">
+              {notice}
             </p>
-
-            <Link to="/history" className="google-btn">
-              View prediction history
-            </Link>
-
-            <button
-              type="button"
-              className="login-skip"
-              onClick={() => signOut(auth)}
-            >
-              Sign out
-            </button>
-
-          </>
-
-          :
-
-          <>
-
-            <h1>
-              Welcome to AgriSense Pro
-            </h1>
-
-            <p className="login-subtitle">
-              Sign in to save your predictions and recommendations.
-            </p>
+          }
 
 
-            <button
-              type="button"
-              className="google-btn"
-              onClick={handleGoogleLogin}
-              disabled={!firebaseReady || loading}
-            >
+          <button
+            type="button"
+            className="login-skip"
+            onClick={handleGuest}
+          >
+            Continue as guest
+          </button>
 
-              <FcGoogle />
+        </motion.div>
 
-              {loading ? "Signing in..." : "Continue with Google"}
-
-            </button>
-
-
-            {
-              notice &&
-
-              <p className="login-notice" role="status">
-                {notice}
-              </p>
-            }
-
-
-            <Link to="/" className="login-skip">
-              Continue without signing in
-            </Link>
-
-          </>
-        }
-
-      </motion.div>
+      </div>
 
     </div>
 

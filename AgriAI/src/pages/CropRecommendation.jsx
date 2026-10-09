@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 
+import PageBanner from "../components/PageBanner";
+
 import { API_URL } from "../api";
 import { useAuth } from "../auth/AuthContext";
 import { savePrediction } from "../history";
@@ -207,23 +209,11 @@ return(
 
 
 
-<motion.h1
-
-initial={{
-opacity:0,
-y:-30
-}}
-
-animate={{
-opacity:1,
-y:0
-}}
-
->
-
-🌱 AI Crop Recommendation
-
-</motion.h1>
+<PageBanner
+  title="AI Crop Recommendation"
+  subtitle="Find the crop that suits your soil and weather."
+  variant="sprout"
+/>
 
 
 

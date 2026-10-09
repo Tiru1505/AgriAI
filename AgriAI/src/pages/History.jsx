@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
+import PageBanner from "../components/PageBanner";
+
 import { useAuth } from "../auth/AuthContext";
 import { loadHistory } from "../history";
 
@@ -97,9 +99,11 @@ function History() {
 
     <div className="yield-container">
 
-      <h1>
-        🕘 Prediction History
-      </h1>
+      <PageBanner
+        title="Prediction History"
+        subtitle="Every prediction you make while signed in is saved here."
+        variant="windmill"
+      />
 
 
       {

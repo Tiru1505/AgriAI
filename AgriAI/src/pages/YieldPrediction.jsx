@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
+import PageBanner from "../components/PageBanner";
+
 import { API_URL } from "../api";
 import { useAuth } from "../auth/AuthContext";
 import { savePrediction } from "../history";
@@ -157,23 +159,11 @@ function YieldPrediction() {
 
     <div className="yield-container">
 
-      <motion.h1
-
-        initial={{
-          opacity: 0,
-          y: -30
-        }}
-
-        animate={{
-          opacity: 1,
-          y: 0
-        }}
-
-      >
-
-        🌾 AI Yield Prediction
-
-      </motion.h1>
+      <PageBanner
+        title="AI Yield Prediction"
+        subtitle="Estimate how much a crop will produce per hectare."
+        variant="tractor"
+      />
 
 
 

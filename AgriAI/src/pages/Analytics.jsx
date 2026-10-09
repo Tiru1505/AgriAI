@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+import PageBanner from "../components/PageBanner";
+
 import { API_URL } from "../api";
 
 import {
@@ -166,13 +168,11 @@ function Analytics() {
 
     <div className="dashboard-container">
 
-      <h1 className="page-title">
-        📊 Analytics
-      </h1>
-
-      <p className="page-subtitle">
-        Trends from the crop yield dataset and how the two models perform.
-      </p>
+      <PageBanner
+        title="Analytics"
+        subtitle="Trends from the crop yield dataset and how the two models perform."
+        variant="chart"
+      />
 
 
       {

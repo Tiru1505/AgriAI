@@ -1,13 +1,10 @@
 import { motion } from "framer-motion";
 import { Link, NavLink } from "react-router-dom";
-import { signOut } from "firebase/auth";
-
-import { auth } from "../firebase";
 import { useAuth } from "../auth/AuthContext";
 
 function Navbar() {
 
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   return (
     <motion.nav
@@ -62,7 +59,7 @@ function Navbar() {
         <button
           type="button"
           className="nav-login"
-          onClick={() => signOut(auth)}
+          onClick={logout}
           title={user.displayName || user.email}
         >
           Logout

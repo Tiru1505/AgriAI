@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+import FieldScene from "../components/FieldScene";
+
 import { API_URL } from "../api";
 
 import { motion } from "framer-motion";
@@ -130,11 +132,7 @@ function Dashboard() {
 
 
 
-        <div className="hero-illustration">
-
-          🌱🚜🌾
-
-        </div>
+        <FieldScene variant="tractor" />
 
 
       </motion.div>

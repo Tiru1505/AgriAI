@@ -5,7 +5,13 @@ export const AuthContext = createContext({
 
   user: null,
 
-  loading: true
+  loading: true,
+
+  guest: false,
+
+  continueAsGuest: () => {},
+
+  logout: () => {}
 
 });
 
