@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 import { API_URL } from "../api";
+import { useAuth } from "../auth/AuthContext";
+import { savePrediction } from "../history";
 
 import {
   FaSeedling,
@@ -20,6 +22,8 @@ import {
 } from "recharts";
 
 function YieldPrediction() {
+
+  const { user } = useAuth();
 
   const [formData, setFormData] = useState({
 
@@ -128,6 +132,8 @@ function YieldPrediction() {
       const data = await response.json();
 
       setPrediction(data.predicted_yield);
+
+      savePrediction(user, "yield", formData, data);
 
     }
 

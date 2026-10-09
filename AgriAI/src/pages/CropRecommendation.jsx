@@ -3,6 +3,8 @@ import axios from "axios";
 import { motion } from "framer-motion";
 
 import { API_URL } from "../api";
+import { useAuth } from "../auth/AuthContext";
+import { savePrediction } from "../history";
 
 import {
   FaCloudRain,
@@ -20,6 +22,9 @@ import {
 
 
 function CropRecommendation(){
+
+
+const {user} = useAuth();
 
 
 const [formData,setFormData] = useState({
@@ -121,6 +126,20 @@ response.data
 setResult(
 
 response.data.recommended_crop
+
+);
+
+
+
+savePrediction(
+
+user,
+
+"crop",
+
+formData,
+
+response.data
 
 );
 

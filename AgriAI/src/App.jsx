@@ -7,10 +7,14 @@ import YieldPrediction from "./pages/YieldPrediction";
 import CropRecommendation from "./pages/CropRecommendation";
 import Analytics from "./pages/Analytics";
 import Login from "./pages/Login";
+import History from "./pages/History";
+
+import AuthProvider from "./auth/AuthProvider";
 
 
 function App() {
   return (
+    <AuthProvider>
     <BrowserRouter>
 
       <Navbar />
@@ -42,9 +46,15 @@ function App() {
           element={<Login />} 
         />
 
+        <Route 
+          path="/history" 
+          element={<History />} 
+        />
+
       </Routes>
 
     </BrowserRouter>
+    </AuthProvider>
   );
 }
 
